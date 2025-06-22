@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Shark Test Runner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #9c27b0;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .test-button:hover {
+            background: #7b1fa2;
+        }
+        .test-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            color: #2e7d32;
+        }
+        .error {
+            background: #ffebee;
+            border: 1px solid #f44336;
+            color: #c62828;
+        }
+        .info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            color: #1565c0;
+        }
+        .loading {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            color: #ef6c00;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🦈 Screen Shark Extension Test Runner</h1>
+        <p>This page will test the Screen Shark extension's JSON generation functionality.</p>
+        
+        <div class="test-controls">
+            <button id="runJsonTest" class="test-button">Run JSON Generation Test</button>
+            <button id="runScreenshotTest" class="test-button">Run Screenshot Test</button>
+            <button id="clearResults" class="test-button" style="background: #607d8b;">Clear Results</button>
+        </div>
+        
+        <div id="results" class="results info">
+Ready to run tests. Make sure the Screen Shark extension is loaded and active.
+
+Test will create files in: Downloads/Screen Shark/test/
+
+Click "Run JSON Generation Test" to start the comprehensive test.
+        </div>
+    </div>
+
+    <script>
+        let isTestRunning = false;
+
+        function updateResults(message, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.textContent = message;
+            resultsDiv.className = `results ${type}`;
+        }
+
+        function setTestRunning(running) {
+            isTestRunning = running;
+            document.getElementById('runJsonTest').disabled = running;
+            document.getElementById('runScreenshotTest').disabled = running;
+        }
+
+        async function runJsonTest() {
+            if (isTestRunning) return;
+            
+            try {
+                setTestRunning(true);
+                updateResults('Running JSON Generation Test...\n\nThis will:\n1. Start a test session\n2. Capture 3 test screenshots\n3. Generate JSON file\n4. Save to Downloads/Screen Shark/test/\n\nPlease wait...', 'loading');
+
+                const response = await chrome.runtime.sendMessage({ action: 'testSessionJson' });
+                
+                if (response.success) {
+                    const successMessage = `✅ JSON GENERATION TEST PASSED!
+
+📊 Test Results:
+- Screenshots captured: ${response.screenshotCount}
+- JSON file size: ${response.jsonSize} bytes
+- Test folder: Downloads/${response.testFolder}
+
+📁 Files created:
+- Session JSON: ${response.files?.sessionJson || 'session JSON file'}
+- Screenshots: ${response.files?.screenshots?.length || 3} PNG files
+- Test results: test_results_[timestamp].json
+
+✨ Test completed successfully! Check your Downloads folder.`;
+                    
+                    updateResults(successMessage, 'success');
+                } else {
+                    const errorMessage = `❌ JSON GENERATION TEST FAILED!
+
+Error: ${response.error || 'Unknown error'}
+
+Please check:
+1. Extension is properly loaded
+2. You're on a valid webpage (not chrome:// page)
+3. Extension has required permissions
+4. Check browser console for detailed error logs`;
+                    
+                    updateResults(errorMessage, 'error');
+                }
+            } catch (error) {
+                const errorMessage = `❌ TEST EXECUTION FAILED!
+
+Error: ${error.message}
+
+This might happen if:
+1. Screen Shark extension is not loaded
+2. Extension is not active on this page
+3. Browser permissions are missing
+
+Make sure the extension is installed and enabled.`;
+                
+                updateResults(errorMessage, 'error');
+            } finally {
+                setTestRunning(false);
+            }
+        }
+
+        async function runScreenshotTest() {
+            if (isTestRunning) return;
+            
+            try {
+                setTestRunning(true);
+                updateResults('Running Screenshot Test...\n\nTesting basic screenshot capture functionality.\nPlease wait...', 'loading');
+
+                const response = await chrome.runtime.sendMessage({ action: 'testSimpleCapture' });
+                
+                if (response.success) {
+                    updateResults('✅ SCREENSHOT TEST PASSED!\n\nBasic screenshot capture is working correctly.\nCheck Downloads folder for test screenshot.', 'success');
+                } else {
+                    updateResults(`❌ SCREENSHOT TEST FAILED!\n\nError: ${response.error || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                updateResults(`❌ SCREENSHOT TEST FAILED!\n\nError: ${error.message}`, 'error');
+            } finally {
+                setTestRunning(false);
+            }
+        }
+
+        function clearResults() {
+            updateResults('Ready to run tests. Make sure the Screen Shark extension is loaded and active.\n\nTest will create files in: Downloads/Screen Shark/test/\n\nClick "Run JSON Generation Test" to start the comprehensive test.', 'info');
+        }
+
+        // Event listeners
+        document.getElementById('runJsonTest').addEventListener('click', runJsonTest);
+        document.getElementById('runScreenshotTest').addEventListener('click', runScreenshotTest);
+        document.getElementById('clearResults').addEventListener('click', clearResults);
+
+        // Check if extension is available
+        if (typeof chrome !== 'undefined' && chrome.runtime) {
+            updateResults('✅ Chrome extension API detected.\n\nReady to run tests. Click "Run JSON Generation Test" to start.', 'info');
+        } else {
+            updateResults('⚠️  Chrome extension API not detected.\n\nMake sure:\n1. You\'re viewing this in Chrome\n2. Screen Shark extension is installed\n3. This page is loaded via the extension or localhost', 'error');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Shark Extension Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f2f5;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .status-box {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .status-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef5350;
+        }
+        
+        .status-success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+        
+        .status-warning {
+            background: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ff9800;
+        }
+        
+        button {
+            background: #2196F3;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background: #1976D2;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .test-elements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #2196F3;
+            margin-bottom: 20px;
+        }
+        
+        .pre-check {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #ff9800;
+            margin-bottom: 20px;
+        }
+        
+        .troubleshooting {
+            background: #ffebee;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #f44336;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦈 Screen Shark Extension Test Suite</h1>
+        
+        <div class="pre-check">
+            <h3>⚠️ Prerequisites</h3>
+            <p>Before running tests, ensure:</p>
+            <ol>
+                <li>Screen Shark extension is installed and enabled</li>
+                <li>This page is loaded on a website (not file:// protocol)</li>
+                <li>Extension has permission to run on this domain</li>
+                <li>Browser console is open (F12) to see detailed logs</li>
+            </ol>
+        </div>
+        
+        <div id="extensionStatus" class="status-box status-warning">
+            🔍 Checking extension status...
+        </div>
+        
+        <div class="instructions">
+            <h3>How to Test</h3>
+            <p>This test suite validates the Screen Shark extension fixes:</p>
+            <ul>
+                <li>✅ Event listener cleanup (no more persistent notifications)</li>
+                <li>✅ Single content script instance</li>
+                <li>✅ Session JSON file saving</li>
+                <li>✅ Permission validation</li>
+                <li>✅ State synchronization</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <button id="runTestsBtn" onclick="runTests()" disabled>
+                🧪 Run All Tests
+            </button>
+            <button onclick="checkExtension()">
+                🔍 Check Extension Status
+            </button>
+            <button onclick="clearResults()">
+                🧹 Clear Results
+            </button>
+        </div>
+        
+        <div class="test-elements">
+            <div class="test-section">
+                <h3>🔘 Test Buttons</h3>
+                <button onclick="logAction('Button 1 clicked')">Button 1</button>
+                <button onclick="logAction('Button 2 clicked')">Button 2</button>
+                <a href="#" onclick="logAction('Link clicked'); return false;">Test Link</a>
+            </div>
+            
+            <div class="test-section">
+                <h3>📝 Form Elements</h3>
+                <input type="text" placeholder="Test input" onchange="logAction('Input changed')">
+                <select onchange="logAction('Select changed')">
+                    <option>Option 1</option>
+                    <option>Option 2</option>
+                </select>
+            </div>
+            
+            <div class="test-section">
+                <h3>🎛️ Extension Controls</h3>
+                <button onclick="startSession()">Start Session</button>
+                <button onclick="stopSession()">Stop Session</button>
+                <p id="sessionStatus">Session: Unknown</p>
+            </div>
+            
+            <div class="test-section">
+                <h3>🔧 Debug</h3>
+                <button onclick="enableDebugMode()">Enable Debug</button>
+                <button onclick="forceCleanup()">Force Cleanup</button>
+                <button onclick="showState()">Show State</button>
+            </div>
+        </div>
+        
+        <div class="results" id="testResults">
+            Test results will appear here...
+        </div>
+        
+        <div class="troubleshooting" id="troubleshooting">
+            <h3>🔧 Troubleshooting</h3>
+            <p><strong>Common Issues:</strong></p>
+            <ul>
+                <li><strong>Extension not detected:</strong> Make sure Screen Shark is installed and enabled</li>
+                <li><strong>Content script not loaded:</strong> Reload the page and try again</li>
+                <li><strong>Permission denied:</strong> Check extension permissions in chrome://extensions</li>
+                <li><strong>Tests failing:</strong> Open browser console (F12) for detailed error messages</li>
+            </ul>
+            <p><strong>If extension is not working:</strong></p>
+            <ol>
+                <li>Go to chrome://extensions</li>
+                <li>Find Screen Shark extension</li>
+                <li>Click "Reload" button</li>
+                <li>Reload this page</li>
+                <li>Try running tests again</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="test-suite.js"></script>
+    <script>
+        let testSuite = null;
+        let extensionReady = false;
+        
+        // Check extension status on page load
+        async function checkExtension() {
+            const statusDiv = document.getElementById('extensionStatus');
+            const runBtn = document.getElementById('runTestsBtn');
+            const troubleshooting = document.getElementById('troubleshooting');
+            
+            try {
+                // Check if Chrome extension APIs are available
+                if (typeof chrome === 'undefined' || !chrome.runtime) {
+                    throw new Error('Chrome extension APIs not available');
+                }
+                
+                // Check if content script is loaded
+                if (!window.screenSharkContentLoaded) {
+                    throw new Error('Content script not loaded');
+                }
+                
+                // Check if we can communicate with background script
+                const response = await chrome.runtime.sendMessage({ action: 'getState' });
+                if (!response) {
+                    throw new Error('Cannot communicate with background script');
+                }
+                
+                // Success
+                statusDiv.className = 'status-box status-success';
+                statusDiv.innerHTML = '✅ Screen Shark extension is ready for testing!';
+                runBtn.disabled = false;
+                extensionReady = true;
+                troubleshooting.style.display = 'none';
+                
+                updateResults('✅ Extension check passed - ready for testing!');
+                
+            } catch (error) {
+                statusDiv.className = 'status-box status-error';
+                statusDiv.innerHTML = `❌ Extension not ready: ${error.message}`;
+                runBtn.disabled = true;
+                extensionReady = false;
+                troubleshooting.style.display = 'block';
+                
+                updateResults(`❌ Extension check failed: ${error.message}\n\nSee troubleshooting section below.`);
+            }
+        }
+        
+        async function runTests() {
+            if (!extensionReady) {
+                updateResults('❌ Extension not ready. Please fix issues first.');
+                return;
+            }
+            
+            updateResults('🦈 Initializing test suite...\n');
+            
+            try {
+                testSuite = new ScreenSharkTestSuite();
+                const results = await testSuite.runAllTests();
+                
+                appendResults(`\n📊 Test Results Summary:
+✅ Passed: ${results.passed}
+❌ Failed: ${results.failed}
+📝 Total: ${results.total}
+
+${results.failed === 0 ? 
+    '🎉 All tests passed! Extension fixes are working correctly.' : 
+    '⚠️ Some tests failed. Check browser console for details.'
+}
+
+📋 Detailed Results:
+${results.results.map(r => `${r.status === 'PASS' ? '✅' : '❌'} ${r.name}`).join('\n')}
+                `);
+                
+                // Auto-download results
+                downloadResults();
+                
+            } catch (error) {
+                appendResults(`❌ Test suite failed: ${error.message}`);
+            }
+        }
+        
+        function updateResults(text) {
+            document.getElementById('testResults').textContent = text;
+        }
+        
+        function appendResults(text) {
+            const results = document.getElementById('testResults');
+            results.textContent += text + '\n';
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        function clearResults() {
+            updateResults('Results cleared...');
+        }
+        
+        function downloadResults() {
+            if (!testSuite) return;
+            
+            const report = testSuite.generateReport();
+            const dataStr = JSON.stringify(report, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `screen-shark-test-report-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            appendResults('\n📥 Test report downloaded!');
+        }
+        
+        async function startSession() {
+            try {
+                await chrome.runtime.sendMessage({ action: 'toggleSession' });
+                setTimeout(updateSessionStatus, 500);
+                appendResults('▶️ Session start requested');
+            } catch (error) {
+                appendResults(`❌ Failed to start session: ${error.message}`);
+            }
+        }
+        
+        async function stopSession() {
+            try {
+                await chrome.runtime.sendMessage({ action: 'toggleSession' });
+                setTimeout(updateSessionStatus, 500);
+                appendResults('⏹️ Session stop requested');
+            } catch (error) {
+                appendResults(`❌ Failed to stop session: ${error.message}`);
+            }
+        }
+        
+        async function updateSessionStatus() {
+            try {
+                const response = await chrome.runtime.sendMessage({ action: 'getState' });
+                document.getElementById('sessionStatus').textContent = 
+                    `Session: ${response.sessionActive ? '🟢 Active' : '🔴 Inactive'}`;
+            } catch (error) {
+                document.getElementById('sessionStatus').textContent = 'Session: ❌ Error';
+            }
+        }
+        
+        function enableDebugMode() {
+            if (window.screenSharkInstance) {
+                window.screenSharkInstance.debugMode = true;
+                appendResults('🔧 Debug mode enabled');
+            } else {
+                appendResults('❌ No content script instance found');
+            }
+        }
+        
+        function forceCleanup() {
+            if (window.screenSharkInstance) {
+                window.screenSharkInstance.cleanup();
+                appendResults('🧹 Forced cleanup completed');
+            } else {
+                appendResults('❌ No instance to cleanup');
+            }
+        }
+        
+        async function showState() {
+            try {
+                const bgState = await chrome.runtime.sendMessage({ action: 'getState' });
+                const instance = window.screenSharkInstance;
+                
+                appendResults(`\n🔍 Current State:
+Background Session: ${bgState.sessionActive ? '🟢' : '🔴'}
+Content Session: ${instance?.sessionActive ? '🟢' : '🔴'}
+Content Script Loaded: ${window.screenSharkContentLoaded ? '🟢' : '🔴'}
+Click Handler: ${instance?.clickHandler ? '🟢' : '🔴'}
+Submit Handler: ${instance?.submitHandler ? '🟢' : '🔴'}
+                `);
+            } catch (error) {
+                appendResults(`❌ State check failed: ${error.message}`);
+            }
+        }
+        
+        function logAction(action) {
+            appendResults(`🖱️ ${action} at ${new Date().toLocaleTimeString()}`);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateResults('🦈 Screen Shark Test Page loaded\n\nClick "Check Extension Status" to begin...');
+            setTimeout(checkExtension, 1000); // Auto-check after 1 second
+        });
+    </script>
+</body>
+</html>

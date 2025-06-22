@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screen Shark</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <div class="popup-header">
+      <div class="logo">
+        <span class="shark-icon">🦈</span>
+        <h1>Screen Shark</h1>
+      </div>
+      <div class="status-indicator" id="statusIndicator">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">Ready</span>
+      </div>
+    </div>    <!-- Main Controls -->
+    <div class="main-controls">
+      <button class="primary-btn" id="toggleSessionBtn">
+        <span class="btn-icon" id="sessionIcon">▶️</span>
+        <span class="btn-text" id="sessionText">Start Recording</span>
+      </button>
+      
+      <button class="secondary-btn" id="captureBtn">
+        <span class="btn-icon">📸</span>
+        <span class="btn-text">Capture Screenshot</span>
+      </button>      <button class="secondary-btn" id="saveSessionBtn" style="display: none; background: #4CAF50;">
+        <span class="btn-icon">💾</span>
+        <span class="btn-text">Save Session</span>
+      </button>
+      
+      <button class="warning-btn" id="forceStopBtn" style="display: none; background: #f44336; margin-top: 5px;">
+        <span class="btn-icon">🛑</span>
+        <span class="btn-text">Force Stop All Sessions</span>
+      </button>
+      
+      <button class="debug-btn" id="testSimpleBtn" style="display: none; background: #ff9800; margin-top: 5px;">
+        <span class="btn-icon">🧪</span>
+        <span class="btn-text">Test Simple Capture</span>
+      </button>
+        <button class="debug-btn" id="testJsonBtn" style="display: none; background: #9c27b0; margin-top: 5px;">
+        <span class="btn-icon">📋</span>
+        <span class="btn-text">Test JSON Generation</span>
+      </button>
+        <button class="debug-btn" id="testDownloadBtn" style="display: none; background: #2196f3; margin-top: 5px;">
+        <span class="btn-icon">💾</span>
+        <span class="btn-text">Test Download Validation</span>
+      </button>
+      
+      <button class="debug-btn" id="testOverlayBtn" style="display: none; background: #ff5722; margin-top: 5px;">
+        <span class="btn-icon">🎯</span>
+        <span class="btn-text">Test Overlay Rendering</span>
+      </button>
+    </div>
+
+    <!-- Settings -->
+    <div class="settings-section">
+      <div class="setting-item">
+        <label class="toggle-switch">
+          <input type="checkbox" id="debugToggle">
+          <span class="slider"></span>
+        </label>
+        <span class="setting-label">Debug Mode</span>
+      </div>
+    </div>
+
+    <!-- Debug Panel (Hidden by default) -->
+    <div class="debug-panel" id="debugPanel" style="display: none;">
+      <div class="debug-header">
+        <h3>Debug Panel</h3>
+        <button class="clear-btn" id="clearLogsBtn">Clear Logs</button>
+      </div>
+      
+      <div class="debug-stats">
+        <div class="stat-item">
+          <span class="stat-label">Session Active:</span>
+          <span class="stat-value" id="debugSessionStatus">No</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Tab ID:</span>
+          <span class="stat-value" id="debugTabId">-</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">URL:</span>
+          <span class="stat-value" id="debugUrl">-</span>
+        </div>
+      </div>
+      
+      <div class="debug-actions">
+        <button class="debug-btn" id="testScreenshotBtn">Test Screenshot</button>
+        <button class="debug-btn" id="checkPermissionsBtn">Check Permissions</button>
+        <button class="debug-btn" id="exportLogsBtn">Export Logs</button>
+      </div>
+      
+      <div class="debug-logs">
+        <h4>Recent Logs</h4>
+        <div class="logs-container" id="logsContainer">
+          <p class="no-logs">No logs available</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+      <div class="spinner"></div>
+      <p>Processing...</p>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Screen Shark",
+  "version": "1.0.0",
+  "description": "Capture screenshots on user interaction with session recording capabilities",  "permissions": [
+    "activeTab",
+    "storage",
+    "downloads",
+    "notifications",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Screen Shark",
+    "default_icon": {
+      "16": "icons/icon16_enabled.png",
+      "48": "icons/icon48_enabled.png",
+      "128": "icons/icon128_enabled.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16_enabled.png",
+    "48": "icons/icon48_enabled.png",
+    "128": "icons/icon128_enabled.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
