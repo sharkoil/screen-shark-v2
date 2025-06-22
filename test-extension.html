@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Shark Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .test-section h2 {
+            color: #555;
+            margin-top: 0;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        .secondary-btn {
+            background: #2196F3;
+        }
+        
+        .secondary-btn:hover {
+            background: #1976D2;
+        }
+        
+        .danger-btn {
+            background: #f44336;
+        }
+        
+        .danger-btn:hover {
+            background: #d32f2f;
+        }
+        
+        input, select, textarea {
+            padding: 10px;
+            margin: 5px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .link-section a {
+            color: #2196F3;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        
+        .link-section a:hover {
+            text-decoration: underline;
+        }
+        
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #1976D2;
+        }
+        
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦈 Screen Shark Extension Test Page</h1>
+          <div class="instructions">
+            <h3>How to test:</h3>
+            <ol>
+                <li>Install the Screen Shark extension</li>
+                <li>Click the extension icon to open the popup</li>
+                <li>Click "Start Session" to begin recording</li>
+                <li>Interact with the elements below - each interaction should trigger a screenshot</li>
+                <li>Click "Stop Session" to end the recording and save the session JSON file</li>
+                <li>Check your Downloads folder for "Screen Shark" directory with screenshots and session data</li>
+            </ol>
+            <p><strong>🧪 Want automated testing?</strong> 
+            <a href="test-page.html" style="color: #1976D2; font-weight: bold;">Open the comprehensive test suite</a> 
+            to automatically validate all the fixes.</p>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔘 Button Interactions</h2>
+            <button onclick="showStatus('Primary button clicked!', 'success')">Primary Button</button>
+            <button class="secondary-btn" onclick="showStatus('Secondary button clicked!', 'success')">Secondary Button</button>
+            <button class="danger-btn" onclick="showStatus('Danger button clicked!', 'error')">Danger Button</button>
+            <button onclick="incrementCounter()">Counter: <span id="counter">0</span></button>
+        </div>
+        
+        <div class="test-section">
+            <h2>📝 Form Elements</h2>
+            <form onsubmit="handleSubmit(event)">
+                <div class="form-row">
+                    <input type="text" placeholder="Enter your name" id="nameInput">
+                    <input type="email" placeholder="Enter your email" id="emailInput">
+                </div>
+                <div class="form-row">
+                    <select id="categorySelect">
+                        <option value="">Select Category</option>
+                        <option value="general">General</option>
+                        <option value="support">Support</option>
+                        <option value="feedback">Feedback</option>
+                    </select>
+                    <input type="date" id="dateInput">
+                </div>
+                <div class="form-row">
+                    <textarea placeholder="Enter your message" rows="3" id="messageInput"></textarea>
+                </div>
+                <button type="submit">Submit Form</button>
+            </form>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔗 Link Interactions</h2>
+            <div class="link-section">
+                <a href="#section1" onclick="showStatus('Internal link clicked!', 'success')">Internal Link</a>
+                <a href="https://example.com" target="_blank" onclick="showStatus('External link clicked!', 'success')">External Link</a>
+                <a href="javascript:void(0)" onclick="showStatus('JavaScript link clicked!', 'success')">JavaScript Link</a>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎯 Interactive Elements</h2>
+            <div>
+                <span class="btn" onclick="showStatus('Span with btn class clicked!', 'success')" style="background: #FF9800; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; display: inline-block;">Span Button</span>
+                <div role="button" onclick="showStatus('Div with button role clicked!', 'success')" style="background: #9C27B0; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; display: inline-block; margin: 5px;">Div Button</div>
+                <label for="checkbox" style="cursor: pointer; display: block; margin: 10px 0;">
+                    <input type="checkbox" id="checkbox" onchange="showStatus('Checkbox toggled!', 'success')"> Check this box
+                </label>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Dynamic Content</h2>
+            <button onclick="addDynamicContent()">Add Dynamic Content</button>
+            <button onclick="clearDynamicContent()">Clear Dynamic Content</button>
+            <div id="dynamicContent"></div>
+        </div>
+        
+        <div id="statusDiv" class="status"></div>
+    </div>
+    
+    <script>
+        let counter = 0;
+        
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusDiv');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        function incrementCounter() {
+            counter++;
+            document.getElementById('counter').textContent = counter;
+            showStatus(`Counter incremented to ${counter}`, 'success');
+        }
+        
+        function handleSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('nameInput').value;
+            const email = document.getElementById('emailInput').value;
+            const category = document.getElementById('categorySelect').value;
+            const date = document.getElementById('dateInput').value;
+            const message = document.getElementById('messageInput').value;
+            
+            showStatus(`Form submitted! Name: ${name}, Email: ${email}`, 'success');
+        }
+        
+        function addDynamicContent() {
+            const container = document.getElementById('dynamicContent');
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.innerHTML = `<button onclick="showStatus('Dynamic button clicked at ${timestamp}!', 'success')" style="margin: 2px; background: #FF5722; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Dynamic Button (${timestamp})</button>`;
+            container.appendChild(div);
+            showStatus('Dynamic content added!', 'success');
+        }
+        
+        function clearDynamicContent() {
+            document.getElementById('dynamicContent').innerHTML = '';
+            showStatus('Dynamic content cleared!', 'success');
+        }
+    </script>
+</body>
+</html>
